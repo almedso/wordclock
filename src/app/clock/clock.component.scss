@@ -1,0 +1,44 @@
+.clock-wrapper {
+    background-color: black;
+    min-width: 480;
+    min-height: 580;
+
+}
+
+.clock {
+    position: relative;
+    display: block;
+    width: 480px;  /* operate with absolute sizes */
+    left: 50%;
+    margin-left: -240px;  /* width * -0.5 */
+    top: 100px;
+}
+
+
+/* grid formatting inspired by */
+/* https://stackoverflow.com/questions/20456694/grid-of-responsive-squares */
+.square {
+    float:left;
+    position: relative;
+    width: 9%;
+    padding-bottom : 9%; /* = width for a 1:1 aspect ratio */
+    overflow:hidden;
+}
+.content {
+    position:absolute;
+    height:90%; /* = 100% - 2*10% padding */
+    width:90%; /* = 100% - 2*5% padding */
+    padding: 5% 5%;
+}
+.table{
+    display:table;
+    height:100%;
+    width:100%;
+}
+.table-cell{
+    display:table-cell;
+    text-align: center;
+    font-size: 30px; /* operate with absolute font sizes */
+    height:100%;
+    width:100%;
+}
