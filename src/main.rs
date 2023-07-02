@@ -1,68 +1,115 @@
-use iced::Settings;
-use iced::Sandbox;
-use iced::widget::{Widget, Button, Text, Column, Row, Renderer, Container};
+use iced::alignment::{Alignment};
+use iced::event::{Event};
+use iced::executor;
+use iced::theme::{self, Theme, Palette, Custom};
+use iced::widget::{ Column, Row, container, Text, };
+use iced::{
+    Application, Color, Command, Element, Length, Settings, Subscription,
+};
 
-const CH_BERN_GRID: [char; 11 * 11] =  [
-    'E', 'S', 'K', 'I', 'S', 'C', 'H', 'A', 'F', 'Ü', 'F',
-    'V', 'I', 'E', 'R', 'T', 'U', 'B', 'F', 'Z', 'Ä', 'Ä',
-    'Z', 'W', 'Ä', 'N', 'Z', 'G', 'S', 'I', 'V', 'O', 'R',
-    'A', 'B', 'O', 'H', 'A', 'U', 'B', 'I', 'E', 'P', 'M',
-    'E', 'I', 'S', 'Z', 'W', 'O', 'I', 'S', 'D', 'R', 'Ü',
-    'V', 'I', 'E', 'R', 'F', 'Ü', 'N', 'F', 'I', 'Q', 'T',
-    'S', 'E', 'C', 'H', 'S', 'I', 'S', 'I', 'B', 'N', 'I',
-    'A', 'C', 'H', 'T', 'I', 'N', 'Ü', 'N', 'I', 'E', 'L',
-    'Z', 'Ä', 'N', 'I', 'E', 'R', 'B', 'E', 'U', 'F', 'I',
-    'Z', 'W', 'Ö', 'U', 'F', 'I', 'A', 'M', 'U', 'H', 'R',
-    ' ', ' ', ' ', '*', '*', '*', '*', ' ', ' ', ' ', ' ',
-];
+use wordclock::{MAX_COLUMNS, MAX_ROWS, CH_BERN_GRID};
 
 
-struct Counter {
-    count: i32
+pub fn main() -> iced::Result {
+    ClockWordArea::run(Settings {
+        ..Settings::default()
+    })
 }
 
 #[derive(Debug, Clone, Copy)]
-enum CounterMessage {
-    Increment,
-    Decrement
+enum Message {
+    Tick(time::OffsetDateTime),
 }
 
-impl Sandbox for Counter {
-    type Message = CounterMessage;
+struct ClockWordArea {
+    now: time::OffsetDateTime,
+}
 
-    fn new() -> Self {
-        Counter{ count: 0 }
+
+impl Application for ClockWordArea {
+    type Message = Message;
+    type Theme = Theme;
+    type Executor = executor::Default;
+    type Flags = ();
+    fn theme(&self) -> Self::Theme {
+        Theme::Custom(Box::new( Custom::new (Palette {
+            background : Color::BLACK,
+            text : Color { r: 0.0,  g: 1.0,  b: 0.0,  a: 0.5,},
+            primary :Color { r: 0.0,  g: 1.0,  b: 0.0,  a: 1.0 },
+            success : Color { r: 0.0,  g: 1.0,  b: 0.0,  a: 1.0,},
+            danger : Color { r: 0.0,  g: 1.0,  b: 0.0,  a: 1.0,},
+        } )))
+    }
+
+    fn new(_flags: ()) -> (Self, Command<Message>) {
+        (
+            ClockWordArea {
+                now: time::OffsetDateTime::now_local()
+                    .unwrap_or_else(|_| time::OffsetDateTime::now_utc()), },
+            Command::none(),
+        )
     }
 
     fn title(&self) -> String {
-        String::from("Counter app")
+        String::from("Word Clock - Iced")
     }
 
-    fn update(&mut self, message: Self::Message) {
+    fn update(&mut self, message: Message) -> Command<Message> {
         match message {
-            CounterMessage::Increment => self.count += 1,
-            CounterMessage::Decrement => self.count -= 1
+            Message::Tick(local_time) => {
+                let now = local_time;
+
+                if now != self.now {
+                    self.now = now;
+                }
+            }
         }
+
+        Command::none()
     }
 
-    fn view(&self) -> iced::Element<'_, Self::Message> {
-
-
-        let col: Column<Text<Self::Message, Renderer >> = CH_BERN_GRID.into_iter()
-            .map( |c|  Text::new(c.to_string()) )
-            .collect();
-
-
-        // let label = Text::new(format!("Count: {}", self.count));
-        // let col = Column::new().push(incr).push(label).push(decr);
-
-        Container::new(col).center_x().center_y().width(iced::Length::Fill).height(iced::Length::Fill).into()
-
-
+    fn subscription(&self) -> Subscription<Message> {
+        iced::time::every(std::time::Duration::from_millis(500)).map(|_| {
+            Message::Tick(
+                time::OffsetDateTime::now_local()
+                    .unwrap_or_else(|_| time::OffsetDateTime::now_utc()),
+            )
+        })
     }
-}
 
-fn main() -> Result<(), iced::Error> {
-    Counter::run(Settings::default())
-}
+    fn view(&self) -> Element<Message> {
 
+        let mut col = Column::new()
+        .spacing(10)
+        .padding(10)
+        .align_items(Alignment::Center);
+
+        for col_index in 0..MAX_COLUMNS {
+            let mut row = Row::new()
+                .spacing(10)
+                .padding(10)
+                .align_items(Alignment::Center);
+            for row_index in 0..MAX_ROWS {
+                let r = row.push(
+                    Text::new(CH_BERN_GRID[col_index * MAX_ROWS + row_index])
+                        .height(40)
+                        .width(40)
+                        .size(32)
+                        // .style(theme::Text::Color( Color { r: 1.0,  g: 0.0,  b: 0.0,  a: 1.0,}))
+                    );
+
+                row = r;
+            }
+            let c = col.push(row);
+            col = c;
+        }
+
+        container(col)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .center_x()
+            .center_y()
+            .into()
+    }
+
+}
