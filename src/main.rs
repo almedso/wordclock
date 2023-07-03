@@ -1,5 +1,4 @@
 use iced::alignment::Alignment;
-use iced::event::Event;
 use iced::executor;
 use iced::theme::{self, Custom, Palette, Theme};
 use iced::widget::{container, Column, Row, Text};
@@ -138,26 +137,6 @@ impl Application for ClockWordArea {
                     .align_items(Alignment::Center);
             }
         }
-
-        // for col_index in 0..MAX_COLUMNS {
-        //     let mut row = Row::new()
-        //         .spacing(10)
-        //         .padding(10)
-        //         .align_items(Alignment::Center);
-        //     for row_index in 0..MAX_ROWS {
-        //         let r = row.push(
-        //             Text::new(CH_BERN_GRID[col_index * MAX_ROWS + row_index])
-        //                 .height(40)
-        //                 .width(40)
-        //                 .size(32)
-        //                 // .style(theme::Text::Color( Color { r: 1.0,  g: 0.0,  b: 0.0,  a: 1.0,}))
-        //             );
-
-        //         row = r;
-        //     }
-        //     let c = col.push(row);
-        //     col = c;
-        // }
 
         container(col)
             .width(Length::Fill)

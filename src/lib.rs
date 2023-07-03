@@ -53,7 +53,7 @@ impl WordClock {
             index: 0,
             hour,
             minute,
-            word_clock: &self,
+            word_clock: self,
         }
     }
 }
@@ -65,11 +65,33 @@ pub struct WordClockIterator<'a> {
     word_clock: &'a WordClock,
 }
 
+impl<'a> WordClockIterator<'a> {
+    fn higlight_character(&self) -> bool {
+        for word in map_time_to_clock_words(self.hour, self.minute) {
+            if let Some(x) = word {
+                let (start, length) = (self.word_clock.map_fn)(x);
+                if start <= self.index && start + length > self.index {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+}
+
 impl<'a> Iterator for WordClockIterator<'a> {
     type Item = (&'a str, bool, bool);
 
     fn next(&mut self) -> Option<Self::Item> {
-        None
+        if self.index >= MAX_COLUMNS * MAX_ROWS {
+            return None;
+        }
+
+        let end_of_row = (self.index % MAX_COLUMNS) == (MAX_COLUMNS - 1);
+        let highlight = self.higlight_character();
+        let character = self.word_clock.text[self.index];
+        self.index += 1;
+        Some((character, highlight, end_of_row))
     }
 }
 
@@ -91,7 +113,7 @@ pub const CH_BERN_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
     "*", "*", "*", " ", " ", " ", " ",
 ];
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ClockWord {
     Zero,
     One,
@@ -156,8 +178,8 @@ fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
     }
 }
 
-fn map_time_to_clock_words(hour: usize, minute: usize) -> [Option<ClockWord>; 4] {
-    let mut clock_words: [Option<ClockWord>; 4] = [None; 4];
+fn map_time_to_clock_words(hour: usize, minute: usize) -> [Option<ClockWord>; 5] {
+    let mut clock_words: [Option<ClockWord>; 5] = [None; 5];
 
     let mut index: usize = 0;
     let mut hour = hour;
@@ -165,6 +187,7 @@ fn map_time_to_clock_words(hour: usize, minute: usize) -> [Option<ClockWord>; 4]
     // handle the minutes below 5
     let modus_five = minute % 5;
     match modus_five {
+        0 => (), // ignore
         1 => {
             clock_words[index] = Some(ClockWord::OneMinute);
             index += 1;
@@ -262,7 +285,7 @@ fn map_time_to_clock_words(hour: usize, minute: usize) -> [Option<ClockWord>; 4]
             hour += 1;
         }
         50 => {
-            clock_words[index] = Some(ClockWord::Ten);
+            clock_words[index] = Some(ClockWord::TenMinutes);
             index += 1;
             clock_words[index] = Some(ClockWord::To);
             index += 1;
@@ -281,7 +304,7 @@ fn map_time_to_clock_words(hour: usize, minute: usize) -> [Option<ClockWord>; 4]
     }
 
     // handle the hour
-    hour = hour % 12;
+    hour %= 12;
     clock_words[index] = match hour {
         0 => Some(ClockWord::Twelve),
         1 => Some(ClockWord::One),
@@ -300,27 +323,5 @@ fn map_time_to_clock_words(hour: usize, minute: usize) -> [Option<ClockWord>; 4]
     clock_words
 }
 
-// / Generate an iterable with item type (char, bool)
-// / that iterates over
-// trait WordClockDisplayIterator {
-//     fn display_time_iterator(&self) -> dyn Iterator<(&static str, bool)>;
-// }
-
-// struct SwissWordClockDisplayIterator {
-//     current_index: usize,
-//     hour: usize,
-//     minute: usize,
-// }
-
-// impl SwissWordClockDisplayIterator {
-//     pub fn display_time_itetrator() -> Iterator<(&'static str, bool)> {
-
-//     }
-//     pub fn new (hour: usize, minute: usize ) -> Iterator<(&'static str, bool)> {
-//         SwissWordClockDisplayIterator {
-//             current_index: 0,
-//             hour,
-//             minute
-//         }
-//     }
-// }
+#[cfg(test)]
+mod tests;
