@@ -14,7 +14,7 @@
 //!     loop {
 //!         sleep(Duration::new(60, 0));  // sleep 1 minute
 //!         let now = let now: DateTime<Utc> = Utc::now();
-//!         let mut display_iterator = clock.show_time_iterator(now);
+//!         let mut display_iterator = clock.show_time_iterator(now.hour(), now.minute());
 //!         display_iterator.show_time(display);
 //!     }
 //! }
@@ -23,7 +23,8 @@
 
 pub struct WordClock {
     text: [&'static str; MAX_COLUMNS * MAX_ROWS],
-    map_fn: fn(ClockWord) -> (usize, usize),
+    map_clock_word_to_array_pos: fn(ClockWord) -> (usize, usize),
+    map_time_to_clock_words: fn(usize, usize) -> [Option<ClockWord>; 5],
 }
 
 impl WordClock {
@@ -34,7 +35,8 @@ impl WordClock {
     pub fn new(_language: &str, _dialect: &str) -> Self {
         WordClock {
             text: CH_BERN_GRID,
-            map_fn: map_swiss_bern,
+            map_clock_word_to_array_pos: map_swiss_bern,
+            map_time_to_clock_words: map_time_to_clock_words_half_mode,
         }
     }
 
@@ -67,9 +69,9 @@ pub struct WordClockIterator<'a> {
 
 impl<'a> WordClockIterator<'a> {
     fn higlight_character(&self) -> bool {
-        for word in map_time_to_clock_words(self.hour, self.minute) {
+        for word in (self.word_clock.map_time_to_clock_words)(self.hour, self.minute) {
             if let Some(x) = word {
-                let (start, length) = (self.word_clock.map_fn)(x);
+                let (start, length) = (self.word_clock.map_clock_word_to_array_pos)(x);
                 if start <= self.index && start + length > self.index {
                     return true;
                 }
@@ -178,39 +180,46 @@ fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
     }
 }
 
-fn map_time_to_clock_words(hour: usize, minute: usize) -> [Option<ClockWord>; 5] {
-    let mut clock_words: [Option<ClockWord>; 5] = [None; 5];
-
-    let mut index: usize = 0;
-    let mut hour = hour;
-
-    // handle the minutes below 5
-    let modus_five = minute % 5;
-    match modus_five {
-        0 => (), // ignore
-        1 => {
-            clock_words[index] = Some(ClockWord::OneMinute);
-            index += 1;
-        }
-        2 => {
-            clock_words[index] = Some(ClockWord::TwoMinutes);
-            index += 1;
-        }
-        3 => {
-            clock_words[index] = Some(ClockWord::ThreeMinutes);
-            index += 1;
-        }
-        4 => {
-            clock_words[index] = Some(ClockWord::FourMinutes);
-            index += 1;
-        }
-        _ => {
-            panic!("Cannot happen");
-        }
+fn handle_minutes_0_to_4_remainder(minute: usize) -> Option<ClockWord> {
+    match minute % 5 {
+        0 => None,
+        1 => Some(ClockWord::OneMinute),
+        2 => Some(ClockWord::TwoMinutes),
+        3 => Some(ClockWord::ThreeMinutes),
+        4 => Some(ClockWord::FourMinutes),
+        _ => panic!("Cannot happen"),
     }
+}
+
+fn handle_the_hour(hour: usize) -> Option<ClockWord> {
+    let hour = hour % 12;
+    match hour {
+        0 => Some(ClockWord::Twelve),
+        1 => Some(ClockWord::One),
+        2 => Some(ClockWord::Two),
+        3 => Some(ClockWord::Three),
+        4 => Some(ClockWord::Four),
+        5 => Some(ClockWord::Five),
+        6 => Some(ClockWord::Six),
+        7 => Some(ClockWord::Seven),
+        8 => Some(ClockWord::Eight),
+        9 => Some(ClockWord::Nine),
+        10 => Some(ClockWord::Ten),
+        11 => Some(ClockWord::Eleven),
+        _ => panic!("Cannot happen"),
+    }
+}
+
+fn map_time_to_clock_words_half_mode(hour: usize, minute: usize) -> [Option<ClockWord>; 5] {
+    let mut clock_words: [Option<ClockWord>; 5] = [None; 5];
+    clock_words[0] = handle_minutes_0_to_4_remainder(minute);
+
+    let mut index: usize = 1;
+    let mut hour = hour;
+    let minute = minute - (minute % 5);
 
     // handle the minutes
-    match minute - modus_five {
+    match minute {
         0 => {
             clock_words[index] = Some(ClockWord::It);
             index += 1;
@@ -302,24 +311,110 @@ fn map_time_to_clock_words(hour: usize, minute: usize) -> [Option<ClockWord>; 5]
             panic!("Cannot happen");
         }
     }
+    clock_words[index] = handle_the_hour(hour);
 
-    // handle the hour
-    hour %= 12;
-    clock_words[index] = match hour {
-        0 => Some(ClockWord::Twelve),
-        1 => Some(ClockWord::One),
-        2 => Some(ClockWord::Two),
-        3 => Some(ClockWord::Three),
-        4 => Some(ClockWord::Four),
-        5 => Some(ClockWord::Five),
-        6 => Some(ClockWord::Six),
-        7 => Some(ClockWord::Seven),
-        8 => Some(ClockWord::Eight),
-        9 => Some(ClockWord::Nine),
-        10 => Some(ClockWord::Ten),
-        11 => Some(ClockWord::Eleven),
-        _ => panic!("Cannot happen"),
-    };
+    clock_words
+}
+
+fn map_time_to_clock_words_half_past_mode(hour: usize, minute: usize) -> [Option<ClockWord>; 5] {
+    let mut clock_words: [Option<ClockWord>; 5] = [None; 5];
+    clock_words[0] = handle_minutes_0_to_4_remainder(minute);
+
+    let mut index: usize = 1;
+    let mut hour = hour;
+    let minute = minute - (minute % 5);
+
+    // handle the minutes
+    match minute {
+        0 => {
+            clock_words[index] = Some(ClockWord::It);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Is);
+            index += 1;
+            clock_words[index] = Some(ClockWord::FullClock);
+            index += 1;
+        }
+        5 => {
+            clock_words[index] = Some(ClockWord::FiveMinutes);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Past);
+            index += 1;
+        }
+        10 => {
+            clock_words[index] = Some(ClockWord::TenMinutes);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Past);
+            index += 1;
+        }
+        15 => {
+            clock_words[index] = Some(ClockWord::Quarter);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Past);
+            index += 1;
+        }
+        20 => {
+            clock_words[index] = Some(ClockWord::Twenty);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Past);
+            index += 1;
+        }
+        25 => {
+            clock_words[index] = Some(ClockWord::FiveMinutes);
+            index += 1;
+            clock_words[index] = Some(ClockWord::To);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Half);
+            index += 1;
+            hour += 1;
+        }
+        30 => {
+            clock_words[index] = Some(ClockWord::Half);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Past);
+            index += 1;
+        }
+        35 => {
+            clock_words[index] = Some(ClockWord::FiveMinutes);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Past);
+            index += 1;
+            clock_words[index] = Some(ClockWord::Half);
+            index += 1;
+        }
+        40 => {
+            clock_words[index] = Some(ClockWord::Twenty);
+            index += 1;
+            clock_words[index] = Some(ClockWord::To);
+            index += 1;
+            hour += 1;
+        }
+        45 => {
+            clock_words[index] = Some(ClockWord::Quarter);
+            index += 1;
+            clock_words[index] = Some(ClockWord::To);
+            index += 1;
+            hour += 1;
+        }
+        50 => {
+            clock_words[index] = Some(ClockWord::TenMinutes);
+            index += 1;
+            clock_words[index] = Some(ClockWord::To);
+            index += 1;
+            hour += 1;
+        }
+        55 => {
+            clock_words[index] = Some(ClockWord::FiveMinutes);
+            index += 1;
+            clock_words[index] = Some(ClockWord::To);
+            index += 1;
+            hour += 1;
+        }
+        _ => {
+            panic!("Cannot happen");
+        }
+    }
+    clock_words[index] = handle_the_hour(hour);
+
     clock_words
 }
 
