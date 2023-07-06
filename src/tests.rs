@@ -15,6 +15,7 @@ fn test_map_time_to_clock_words_half_mode_remainder_minutes() {
         Some(ClockWord::Past),
         Some(ClockWord::Four),
         None,
+        None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 10);
     assert!(expected.iter().eq(received.iter()));
@@ -24,6 +25,7 @@ fn test_map_time_to_clock_words_half_mode_remainder_minutes() {
         Some(ClockWord::TenMinutes),
         Some(ClockWord::Past),
         Some(ClockWord::Four),
+        None,
         None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 11);
@@ -35,6 +37,7 @@ fn test_map_time_to_clock_words_half_mode_remainder_minutes() {
         Some(ClockWord::Past),
         Some(ClockWord::Four),
         None,
+        None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 12);
     assert!(expected.iter().eq(received.iter()));
@@ -45,6 +48,7 @@ fn test_map_time_to_clock_words_half_mode_remainder_minutes() {
         Some(ClockWord::Past),
         Some(ClockWord::Four),
         None,
+        None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 13);
     assert!(expected.iter().eq(received.iter()));
@@ -54,6 +58,7 @@ fn test_map_time_to_clock_words_half_mode_remainder_minutes() {
         Some(ClockWord::TenMinutes),
         Some(ClockWord::Past),
         Some(ClockWord::Four),
+        None,
         None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 14);
@@ -68,6 +73,7 @@ fn test_map_time_to_clock_words_half_mode_all_quarters() {
         Some(ClockWord::Past),
         Some(ClockWord::Four),
         None,
+        None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 15);
     assert!(expected.iter().eq(received.iter()));
@@ -78,6 +84,7 @@ fn test_map_time_to_clock_words_half_mode_all_quarters() {
         Some(ClockWord::Is),
         Some(ClockWord::FullClock),
         Some(ClockWord::Four),
+        None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 0);
     assert!(expected.iter().eq(received.iter()));
@@ -87,6 +94,7 @@ fn test_map_time_to_clock_words_half_mode_all_quarters() {
         Some(ClockWord::Quarter),
         Some(ClockWord::To),
         Some(ClockWord::Five),
+        None,
         None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 45);
@@ -102,6 +110,7 @@ fn test_map_time_to_clock_words_half_mode_half() {
         Some(ClockWord::Is),
         Some(ClockWord::Half),
         Some(ClockWord::Five),
+        None,
     ];
     let received = map_time_to_clock_words_half_mode(4, 30);
     assert!(expected.iter().eq(received.iter()));
@@ -116,6 +125,7 @@ fn test_map_time_to_clock_words_half_past_mode() {
         Some(ClockWord::Past),
         Some(ClockWord::Four),
         None,
+        None,
     ];
     let received = map_time_to_clock_words_half_past_mode(4, 30);
     assert!(expected.iter().eq(received.iter()));
@@ -123,10 +133,21 @@ fn test_map_time_to_clock_words_half_past_mode() {
     let expected = [
         None,
         Some(ClockWord::FiveMinutes),
-        // Some(ClockWord::Past),
-        Some(ClockWord::Half),
+        Some(ClockWord::Twenty),
+        Some(ClockWord::Minutes),
         Some(ClockWord::Past),
         Some(ClockWord::Four),
+    ];
+    let received = map_time_to_clock_words_half_past_mode(4, 25);
+    assert!(expected.iter().eq(received.iter()));
+
+    let expected = [
+        None,
+        Some(ClockWord::FiveMinutes),
+        Some(ClockWord::Twenty),
+        Some(ClockWord::Minutes),
+        Some(ClockWord::To),
+        Some(ClockWord::Five),
     ];
     let received = map_time_to_clock_words_half_past_mode(4, 35);
     assert!(expected.iter().eq(received.iter()));

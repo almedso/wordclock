@@ -24,7 +24,7 @@
 pub struct WordClock {
     text: [&'static str; MAX_COLUMNS * MAX_ROWS],
     map_clock_word_to_array_pos: fn(ClockWord) -> (usize, usize),
-    map_time_to_clock_words: fn(usize, usize) -> [Option<ClockWord>; 5],
+    map_time_to_clock_words: fn(usize, usize) -> [Option<ClockWord>; 6],
 }
 
 impl WordClock {
@@ -145,6 +145,7 @@ pub enum ClockWord {
     TwoMinutes,
     ThreeMinutes,
     FourMinutes,
+    Minutes,
 }
 
 /// Map clock word to it"s the Position and length in the Field
@@ -178,6 +179,7 @@ fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
         ClockWord::TwoMinutes => (10 * 11 + 3, 2),
         ClockWord::ThreeMinutes => (10 * 11 + 3, 3),
         ClockWord::FourMinutes => (10 * 11 + 3, 4),
+        ClockWord::Minutes => (0, 0),
     }
 }
 
@@ -211,8 +213,8 @@ fn handle_the_hour(hour: usize) -> Option<ClockWord> {
     }
 }
 
-fn map_time_to_clock_words_half_mode(hour: usize, minute: usize) -> [Option<ClockWord>; 5] {
-    let mut clock_words: [Option<ClockWord>; 5] = [None; 5];
+fn map_time_to_clock_words_half_mode(hour: usize, minute: usize) -> [Option<ClockWord>; 6] {
+    let mut clock_words: [Option<ClockWord>; 6] = [None; 6];
     clock_words[0] = handle_minutes_0_to_4_remainder(minute);
 
     let mut index: usize = 1;
@@ -318,8 +320,8 @@ fn map_time_to_clock_words_half_mode(hour: usize, minute: usize) -> [Option<Cloc
 }
 
 #[allow(dead_code)]
-fn map_time_to_clock_words_half_past_mode(hour: usize, minute: usize) -> [Option<ClockWord>; 5] {
-    let mut clock_words: [Option<ClockWord>; 5] = [None; 5];
+fn map_time_to_clock_words_half_past_mode(hour: usize, minute: usize) -> [Option<ClockWord>; 6] {
+    let mut clock_words: [Option<ClockWord>; 6] = [None; 6];
     clock_words[0] = handle_minutes_0_to_4_remainder(minute);
 
     let mut index: usize = 1;
@@ -363,11 +365,12 @@ fn map_time_to_clock_words_half_past_mode(hour: usize, minute: usize) -> [Option
         25 => {
             clock_words[index] = Some(ClockWord::FiveMinutes);
             index += 1;
-            clock_words[index] = Some(ClockWord::To);
+            clock_words[index] = Some(ClockWord::Twenty);
             index += 1;
-            clock_words[index] = Some(ClockWord::Half);
+            clock_words[index] = Some(ClockWord::Minutes);
             index += 1;
-            hour += 1;
+            clock_words[index] = Some(ClockWord::Past);
+            index += 1;
         }
         30 => {
             clock_words[index] = Some(ClockWord::Half);
@@ -378,10 +381,13 @@ fn map_time_to_clock_words_half_past_mode(hour: usize, minute: usize) -> [Option
         35 => {
             clock_words[index] = Some(ClockWord::FiveMinutes);
             index += 1;
-            clock_words[index] = Some(ClockWord::Past);
+            clock_words[index] = Some(ClockWord::Twenty);
             index += 1;
-            clock_words[index] = Some(ClockWord::Half);
+            clock_words[index] = Some(ClockWord::Minutes);
             index += 1;
+            clock_words[index] = Some(ClockWord::To);
+            index += 1;
+            hour += 1;
         }
         40 => {
             clock_words[index] = Some(ClockWord::Twenty);
