@@ -69,12 +69,13 @@ pub struct WordClockIterator<'a> {
 
 impl<'a> WordClockIterator<'a> {
     fn higlight_character(&self) -> bool {
-        for word in (self.word_clock.map_time_to_clock_words)(self.hour, self.minute) {
-            if let Some(x) = word {
-                let (start, length) = (self.word_clock.map_clock_word_to_array_pos)(x);
-                if start <= self.index && start + length > self.index {
-                    return true;
-                }
+        for word in (self.word_clock.map_time_to_clock_words)(self.hour, self.minute)
+            .into_iter()
+            .flatten()
+        {
+            let (start, length) = (self.word_clock.map_clock_word_to_array_pos)(word);
+            if start <= self.index && start + length > self.index {
+                return true;
             }
         }
         false
@@ -316,6 +317,7 @@ fn map_time_to_clock_words_half_mode(hour: usize, minute: usize) -> [Option<Cloc
     clock_words
 }
 
+#[allow(dead_code)]
 fn map_time_to_clock_words_half_past_mode(hour: usize, minute: usize) -> [Option<ClockWord>; 5] {
     let mut clock_words: [Option<ClockWord>; 5] = [None; 5];
     clock_words[0] = handle_minutes_0_to_4_remainder(minute);
