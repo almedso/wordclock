@@ -6,6 +6,8 @@ use iced::{Application, Color, Command, Element, Length, Settings, Subscription}
 
 use wordclock::WordClock;
 
+use std::env;
+
 pub fn main() -> iced::Result {
     ClockWordArea::run(Settings {
         ..Settings::default()
@@ -63,7 +65,7 @@ impl Application for ClockWordArea {
             ClockWordArea {
                 now: time::OffsetDateTime::now_local()
                     .unwrap_or_else(|_| time::OffsetDateTime::now_utc()),
-                display: WordClock::new("CH", "Bern"),
+                display: WordClock::new("en-uk"),
             },
             Command::none(),
         )

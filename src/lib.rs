@@ -8,7 +8,7 @@
 //!
 //! fn main()
 //! {
-//!     clock = WorldClock::new("Bern", "CH");
+//!     clock = WorldClock::new("ch-bern");
 //!     let mut display = IcedWordClockDisplay();
 //!     display.init();
 //!     loop {
@@ -32,12 +32,19 @@ impl WordClock {
     ///
     /// Note:
     ///   So far only swiss german / Bern dialect is supported
-    pub fn new(_language: &str, _dialect: &str) -> Self {
-        WordClock {
-            text: CH_BERN_GRID,
-            map_clock_word_to_array_pos: map_swiss_bern,
-            map_time_to_clock_words: map_time_to_clock_words_half_mode,
-        }
+    pub fn new(dialect: &str) -> Self {
+      match dialect {
+        "en-uk" => WordClock {
+          text: EN_UK_GRID,
+          map_clock_word_to_array_pos: map_en_uk,
+          map_time_to_clock_words: map_time_to_clock_words_half_past_mode,
+        },
+        "ch-bern" | _ => WordClock {
+          text: CH_BERN_GRID,
+          map_clock_word_to_array_pos: map_swiss_bern,
+          map_time_to_clock_words: map_time_to_clock_words_half_mode,
+        },
+      }
     }
 
     /// Create an iterator to display the time in words
@@ -98,23 +105,6 @@ impl<'a> Iterator for WordClockIterator<'a> {
     }
 }
 
-/// 1-dimensional representation of an 11x11 array representing a WordClock
-///
-/// 1st 10 rows are used for the word, 11th row is to show minutes
-///
-
-pub const MAX_COLUMNS: usize = 11;
-pub const MAX_ROWS: usize = 11;
-
-pub const CH_BERN_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
-    "E", "S", "K", "I", "S", "C", "H", "A", "F", "Ü", "F", "V", "I", "E", "R", "T", "U", "B", "F",
-    "Z", "Ä", "Ä", "Z", "W", "Ä", "N", "Z", "G", "S", "I", "V", "O", "R", "A", "B", "O", "H", "A",
-    "U", "B", "I", "E", "P", "M", "E", "I", "S", "Z", "W", "O", "I", "S", "D", "R", "Ü", "V", "I",
-    "E", "R", "F", "Ü", "N", "F", "I", "Q", "T", "S", "E", "C", "H", "S", "I", "S", "I", "B", "N",
-    "I", "A", "C", "H", "T", "I", "N", "Ü", "N", "I", "E", "L", "Z", "Ä", "N", "I", "E", "R", "B",
-    "E", "U", "F", "I", "Z", "W", "Ö", "U", "F", "I", "A", "M", "U", "H", "R", " ", " ", " ", "*",
-    "*", "*", "*", " ", " ", " ", " ",
-];
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ClockWord {
@@ -147,6 +137,44 @@ pub enum ClockWord {
     FourMinutes,
     Minutes,
 }
+
+/// 1-dimensional representation of an 11x11 array representing a WordClock
+///
+/// 1st 10 rows are used for the word, 11th row is to show minutes
+/// all Variations by language/dialect have to fit into that Scheme
+/// This is design decision.
+
+pub const MAX_COLUMNS: usize = 11;
+pub const MAX_ROWS: usize = 11;
+
+pub const CH_BERN_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
+    "E", "S", "K", "I", "S", "C", "H", "A", "F", "Ü", "F",
+    "V", "I", "E", "R", "T", "U", "B", "F", "Z", "Ä", "Ä",
+    "Z", "W", "Ä", "N", "Z", "G", "S", "I", "V", "O", "R",
+    "A", "B", "O", "H", "A", "U", "B", "I", "E", "P", "M",
+    "E", "I", "S", "Z", "W", "O", "I", "S", "D", "R", "Ü",
+    "V", "I", "E", "R", "F", "Ü", "N", "F", "I", "Q", "T",
+    "S", "E", "C", "H", "S", "I", "S", "I", "B", "N", "I",
+    "A", "C", "H", "T", "I", "N", "Ü", "N", "I", "E", "L",
+    "Z", "Ä", "N", "I", "E", "R", "B", "E", "U", "F", "I",
+    "Z", "W", "Ö", "U", "F", "I", "A", "M", "U", "H", "R",
+    " ", " ", " ", "*", "*", "*", "*", " ", " ", " ", " ",
+];
+
+
+pub const EN_UK_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
+    "I", "T", "S", "D", "A", "Y", "H", "A", "L", "F", "M",
+    "N", "T", "E", "N", "Q", "U", "A", "R", "T", "E", "R",
+    "T", "W", "E", "N", "T", "Y", "P", "F", "I", "F", "E",
+    "W", "A", "Y", "T", "I", "L", "P", "A", "S", "T", "Z",
+    "O", "S", "E", "V", "E", "N", "Y", "N", "O", "O", "N",
+    "M", "I", "D", "N", "I", "G", "H", "T", "T", "E", "N",
+    "F", "I", "V", "E", "N", "I", "N", "E", "T", "W", "O",
+    "E", "L", "E", "V", "E", "N", "E", "I", "G", "H", "T",
+    "O", "N", "E", "S", "I", "X", "T", "H", "R", "E", "E",
+    "F", "O", "U", "R", "S", "O", "C", "L", "O", "C", "K",
+    " ", " ", " ", "*", "*", "*", "*", " ", " ", " ", " ",
+];
 
 /// Map clock word to it"s the Position and length in the Field
 /// in the switzer deutsch language
@@ -181,6 +209,42 @@ fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
         ClockWord::FourMinutes => (10 * 11 + 3, 4),
         ClockWord::Minutes => (0, 0),
     }
+}
+
+
+/// Map clock word to it"s the Position and length in the Field
+/// in the switzer deutsch language
+fn map_en_uk(clock_word: ClockWord) -> (usize, usize) {
+  match clock_word {
+      ClockWord::Zero => (5 * 11 + 0, 8),
+      ClockWord::One => (8 * 11 + 0, 3),
+      ClockWord::Two => (6 * 11 + 7, 3),
+      ClockWord::Three => (8 * 11 + 5, 5),
+      ClockWord::Four => (9 * 11 + 0, 4),
+      ClockWord::Five => (6 * 11 + 0, 4),
+      ClockWord::Six => (8 * 11 + 3, 3),
+      ClockWord::Seven => (4 * 11 + 1, 5),
+      ClockWord::Eight => (7 * 11 + 5, 5),
+      ClockWord::Nine => (6 * 11 + 4, 4),
+      ClockWord::Ten => (5 * 11 + 7, 3),
+      ClockWord::Eleven => (7 * 11 + 0, 6),
+      ClockWord::Twelve => (4 * 11 + 6, 4),
+      ClockWord::FullClock => (9 * 11 + 5, 6),
+      ClockWord::Half => (0 * 11 + 6, 4),
+      ClockWord::FiveMinutes => (2 * 11 + 7, 4),
+      ClockWord::TenMinutes => (1 * 11 + 1, 3),
+      ClockWord::Quarter => (1 * 11 + 4, 7),
+      ClockWord::Twenty => (2 * 11 + 0, 6),
+      ClockWord::To => (3 * 11 + 3, 3),
+      ClockWord::Past => (3 * 11 + 6, 4),
+      ClockWord::It => (0 * 11 + 0, 2),
+      ClockWord::Is => (0 * 11 + 2, 1),
+      ClockWord::OneMinute => (10 * 11 + 3, 1),
+      ClockWord::TwoMinutes => (10 * 11 + 3, 2),
+      ClockWord::ThreeMinutes => (10 * 11 + 3, 3),
+      ClockWord::FourMinutes => (10 * 11 + 3, 4),
+      ClockWord::Minutes => (0, 0),
+  }
 }
 
 fn handle_minutes_0_to_4_remainder(minute: usize) -> Option<ClockWord> {
