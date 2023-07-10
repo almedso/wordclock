@@ -32,8 +32,8 @@ impl WordClock {
     ///
     /// Note:
     ///   So far only swiss german / Bern dialect is supported
-    pub fn new(dialect: &str) -> Self {
-      match dialect {
+    pub fn new(dialect: String) -> Self {
+      match &dialect[..] {
         "en-uk" => WordClock {
           text: EN_UK_GRID,
           map_clock_word_to_array_pos: map_en_uk,

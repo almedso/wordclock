@@ -8,10 +8,26 @@ use wordclock::WordClock;
 
 use std::env;
 
+trait Extract: Default {
+    /// Replace self with default and returns the initial value.
+    fn extract(&mut self) -> Self;
+}
+
+impl<T: Default> Extract for T {
+    fn extract(&mut self) -> Self {
+        std::mem::replace(self, T::default())
+    }
+}
+
 pub fn main() -> iced::Result {
-    ClockWordArea::run(Settings {
-        ..Settings::default()
-    })
+    let mut args: Vec<_> = env::args().collect();
+    if args.len() > 1 {
+        println!("Language dialect is {}", args[1]);
+    } else {
+        args.push("ch-bern".to_string());
+    }
+    let settings = Settings::with_flags(args[1].extract());
+    ClockWordArea::run(settings)
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -28,7 +44,7 @@ impl Application for ClockWordArea {
     type Message = Message;
     type Theme = Theme;
     type Executor = executor::Default;
-    type Flags = ();
+    type Flags = String;
 
     fn theme(&self) -> Self::Theme {
         Theme::Custom(Box::new(Custom::new(Palette {
@@ -60,12 +76,12 @@ impl Application for ClockWordArea {
         })))
     }
 
-    fn new(_flags: ()) -> (Self, Command<Message>) {
+    fn new(flags: Self::Flags) -> (Self, Command<Message>) {
         (
             ClockWordArea {
                 now: time::OffsetDateTime::now_local()
                     .unwrap_or_else(|_| time::OffsetDateTime::now_utc()),
-                display: WordClock::new("en-uk"),
+                display: WordClock::new( flags ),
             },
             Command::none(),
         )
