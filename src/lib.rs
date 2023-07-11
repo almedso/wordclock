@@ -8,7 +8,7 @@
 //!
 //! fn main()
 //! {
-//!     clock = WorldClock::new("ch-bern");
+//!     let clock = WorldClock::new("ch-bern");
 //!     let mut display = IcedWordClockDisplay();
 //!     display.init();
 //!     loop {

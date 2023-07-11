@@ -4,11 +4,9 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Word Clock</title>
+    <base data-trunk-public-url />
   </head>
   <body>
-    <script type="module">
-      import init from "./iced/iced.js";
-      init('./iced/iced_bg.wasm');
-    </script>
+    <link data-trunk rel="rust" href="Cargo.toml" data-wasm-opt="z" data-bin="iced-wasm-wordclock" />
   </body>
 </html>
