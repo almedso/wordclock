@@ -155,7 +155,7 @@ fn test_map_time_to_clock_words_half_past_mode() {
 
 #[test]
 fn test_wordclock_iterator() {
-    let clock = WordClock::new("ch-bern");
+    let clock = WordClock::new("ch-bern".to_string());
     let mut display_iterator = clock.show_time_iterator(1, 0);
     // 1st row
     assert_eq!(Some(("E", true, false)), display_iterator.next());

@@ -1,21 +1,26 @@
 //! #  Example
 //!
-//! ```ignore
+//! See the `iced` and `pancurses` creates containing  working examples
 //!
-//! use std::time::{Duration, SystemTime};
-//! use chrono::{DateTime, Utc};
-//! use std::thread::sleep;
+//! The following code prints current time the bern dialect on terminal 
+//! ```rust
+//!
+//! use chrono::{Timelike, Utc};
+//! use wordclock::WordClock;
 //!
 //! fn main()
 //! {
-//!     let clock = WorldClock::new("ch-bern");
-//!     let mut display = IcedWordClockDisplay();
-//!     display.init();
-//!     loop {
-//!         sleep(Duration::new(60, 0));  // sleep 1 minute
-//!         let now = let now: DateTime<Utc> = Utc::now();
-//!         let mut display_iterator = clock.show_time_iterator(now.hour(), now.minute());
-//!         display_iterator.show_time(display);
+//!     let clock = WordClock::new("ch-bern".to_string());
+//!     let now  = Utc::now();
+//!     for (letter, highlight, end_of_row) in clock.show_time_iterator(now.hour() as usize, now.minute() as usize) {
+//!       if highlight {
+//!         print!("{}", letter);
+//!       } else {
+//!         print!(".");
+//!       }
+//!       if end_of_row {
+//!         println!("");
+//!       }
 //!     }
 //! }
 //! ```
