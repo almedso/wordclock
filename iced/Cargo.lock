@@ -3128,10 +3128,6 @@ dependencies = [
 [[package]]
 name = "wordclock"
 version = "0.1.0"
-dependencies = [
- "iced",
- "time",
-]
 
 [[package]]
 name = "x11-dl"

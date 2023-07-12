@@ -2,7 +2,7 @@
 //!
 //! See the `iced` and `pancurses` creates containing  working examples
 //!
-//! The following code prints current time the bern dialect on terminal 
+//! The following code prints current time the bern dialect on terminal
 //! ```rust
 //!
 //! use chrono::{Timelike, Utc};
@@ -35,21 +35,32 @@ pub struct WordClock {
 impl WordClock {
     /// Create a word clock in respective language and dialect
     ///
-    /// Note:
-    ///   So far only swiss german / Bern dialect is supported
+    /// Supported dialects are
+    /// - en-uk
+    /// - ch-bern
+    /// - de-de
+    ///
+    /// If an another then the above dialects is provided the default
+    /// of ch-bern is applied.
     pub fn new(dialect: String) -> Self {
-      match &dialect[..] {
-        "en-uk" => WordClock {
-          text: EN_UK_GRID,
-          map_clock_word_to_array_pos: map_en_uk,
-          map_time_to_clock_words: map_time_to_clock_words_half_past_mode,
-        },
-        "ch-bern" | _ => WordClock {
-          text: CH_BERN_GRID,
-          map_clock_word_to_array_pos: map_swiss_bern,
-          map_time_to_clock_words: map_time_to_clock_words_half_mode,
-        },
-      }
+        match &dialect[..] {
+            "en-uk" => WordClock {
+                text: EN_UK_GRID,
+                map_clock_word_to_array_pos: map_en_uk,
+                map_time_to_clock_words: map_time_to_clock_words_half_past_mode,
+            },
+            "de-de" => WordClock {
+              text: DE_DE_GRID,
+              map_clock_word_to_array_pos: map_de_de,
+              map_time_to_clock_words: map_time_to_clock_words_half_mode,
+            },
+            "ch-bern" | _ => WordClock {
+                text: CH_BERN_GRID,
+                map_clock_word_to_array_pos: map_swiss_bern,
+                map_time_to_clock_words: map_time_to_clock_words_half_mode,
+            },
+
+        }
     }
 
     /// Create an iterator to display the time in words
@@ -110,7 +121,6 @@ impl<'a> Iterator for WordClockIterator<'a> {
     }
 }
 
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ClockWord {
     Zero,
@@ -152,6 +162,7 @@ pub enum ClockWord {
 pub const MAX_COLUMNS: usize = 11;
 pub const MAX_ROWS: usize = 11;
 
+#[rustfmt::skip]
 pub const CH_BERN_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
     "E", "S", "K", "I", "S", "C", "H", "A", "F", "Ü", "F",
     "V", "I", "E", "R", "T", "U", "B", "F", "Z", "Ä", "Ä",
@@ -166,11 +177,11 @@ pub const CH_BERN_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
     " ", " ", " ", "*", "*", "*", "*", " ", " ", " ", " ",
 ];
 
-
+#[rustfmt::skip]
 pub const EN_UK_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
     "I", "T", "S", "D", "A", "Y", "H", "A", "L", "F", "M",
     "N", "T", "E", "N", "Q", "U", "A", "R", "T", "E", "R",
-    "T", "W", "E", "N", "T", "Y", "P", "F", "I", "F", "E",
+    "T", "W", "E", "N", "T", "Y", "P", "F", "I", "V", "E",
     "W", "A", "Y", "T", "I", "L", "P", "A", "S", "T", "Z",
     "O", "S", "E", "V", "E", "N", "Y", "N", "O", "O", "N",
     "M", "I", "D", "N", "I", "G", "H", "T", "T", "E", "N",
@@ -181,8 +192,22 @@ pub const EN_UK_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
     " ", " ", " ", "*", "*", "*", "*", " ", " ", " ", " ",
 ];
 
-/// Map clock word to it"s the Position and length in the Field
-/// in the switzer deutsch language
+#[rustfmt::skip]
+pub const DE_DE_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
+    "E", "S", "K", "I", "S", "T", "K", "F", "Ü", "N", "F",
+    "Z", "E", "H", "N", "Z", "W", "A", "N", "Z", "I", "G",
+    "D", "R", "E", "I", "V", "I", "E", "R", "T", "E", "L",
+    "V", "O", "R", "N", "A", "C", "H", "H", "A", "L", "B",
+    "E", "L", "F", "Z", "E", "H", "N", "E", "I", "N", "S",
+    "N", "E", "U", "N", "K", "S", "E", "C", "H", "S", "N",
+    "D", "R", "E", "I", "N", "V", "I", "E", "R", "W", "O",
+    "S", "I", "E", "B", "E", "N", "K", "A", "C", "H", "T",
+    "Z", "W", "E", "I", "K", "F", "Ü", "N", "F", "E", "E",
+    "F", "Z", "W", "Ö", "L", "F", "K", "X", "U", "H", "R",
+    " ", " ", " ", "*", "*", "*", "*", " ", " ", " ", " ",
+];
+
+/// Map clock word to it"s the position and length in the grid
 fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
     match clock_word {
         ClockWord::Zero => (0, 0),
@@ -216,40 +241,72 @@ fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
     }
 }
 
-
-/// Map clock word to it"s the Position and length in the Field
-/// in the switzer deutsch language
+/// Map clock word to it"s the position and length in the grid
 fn map_en_uk(clock_word: ClockWord) -> (usize, usize) {
-  match clock_word {
-      ClockWord::Zero => (5 * 11 + 0, 8),
-      ClockWord::One => (8 * 11 + 0, 3),
-      ClockWord::Two => (6 * 11 + 7, 3),
-      ClockWord::Three => (8 * 11 + 5, 5),
-      ClockWord::Four => (9 * 11 + 0, 4),
-      ClockWord::Five => (6 * 11 + 0, 4),
-      ClockWord::Six => (8 * 11 + 3, 3),
-      ClockWord::Seven => (4 * 11 + 1, 5),
-      ClockWord::Eight => (7 * 11 + 5, 5),
-      ClockWord::Nine => (6 * 11 + 4, 4),
-      ClockWord::Ten => (5 * 11 + 7, 3),
-      ClockWord::Eleven => (7 * 11 + 0, 6),
-      ClockWord::Twelve => (4 * 11 + 6, 4),
-      ClockWord::FullClock => (9 * 11 + 5, 6),
-      ClockWord::Half => (0 * 11 + 6, 4),
-      ClockWord::FiveMinutes => (2 * 11 + 7, 4),
-      ClockWord::TenMinutes => (1 * 11 + 1, 3),
-      ClockWord::Quarter => (1 * 11 + 4, 7),
-      ClockWord::Twenty => (2 * 11 + 0, 6),
-      ClockWord::To => (3 * 11 + 3, 3),
-      ClockWord::Past => (3 * 11 + 6, 4),
-      ClockWord::It => (0 * 11 + 0, 2),
-      ClockWord::Is => (0 * 11 + 2, 1),
-      ClockWord::OneMinute => (10 * 11 + 3, 1),
-      ClockWord::TwoMinutes => (10 * 11 + 3, 2),
-      ClockWord::ThreeMinutes => (10 * 11 + 3, 3),
-      ClockWord::FourMinutes => (10 * 11 + 3, 4),
-      ClockWord::Minutes => (0, 0),
-  }
+    match clock_word {
+        ClockWord::Zero => (5 * 11 + 0, 8),
+        ClockWord::One => (8 * 11 + 0, 3),
+        ClockWord::Two => (6 * 11 + 8, 3),
+        ClockWord::Three => (8 * 11 + 6, 5),
+        ClockWord::Four => (9 * 11 + 0, 4),
+        ClockWord::Five => (6 * 11 + 0, 4),
+        ClockWord::Six => (8 * 11 + 3, 3),
+        ClockWord::Seven => (4 * 11 + 1, 5),
+        ClockWord::Eight => (7 * 11 + 6, 5),
+        ClockWord::Nine => (6 * 11 + 4, 4),
+        ClockWord::Ten => (5 * 11 + 8, 3),
+        ClockWord::Eleven => (7 * 11 + 0, 6),
+        ClockWord::Twelve => (4 * 11 + 7, 4),
+        ClockWord::FullClock => (9 * 11 + 5, 6),
+        ClockWord::Half => (0 * 11 + 6, 4),
+        ClockWord::FiveMinutes => (2 * 11 + 7, 4),
+        ClockWord::TenMinutes => (1 * 11 + 1, 3),
+        ClockWord::Quarter => (1 * 11 + 4, 7),
+        ClockWord::Twenty => (2 * 11 + 0, 6),
+        ClockWord::To => (3 * 11 + 3, 3),
+        ClockWord::Past => (3 * 11 + 6, 4),
+        ClockWord::It => (0 * 11 + 0, 2),
+        ClockWord::Is => (0 * 11 + 2, 1),
+        ClockWord::OneMinute => (10 * 11 + 3, 1),
+        ClockWord::TwoMinutes => (10 * 11 + 3, 2),
+        ClockWord::ThreeMinutes => (10 * 11 + 3, 3),
+        ClockWord::FourMinutes => (10 * 11 + 3, 4),
+        ClockWord::Minutes => (0, 0),
+    }
+}
+
+/// Map clock word to it"s the position and length in the grid
+fn map_de_de(clock_word: ClockWord) -> (usize, usize) {
+    match clock_word {
+        ClockWord::Zero => (0, 0),
+        ClockWord::One => (4 * 11 + 7, 4),
+        ClockWord::Two => (8 * 11 + 0, 4),
+        ClockWord::Three => (6 * 11 + 0, 4),
+        ClockWord::Four => (6 * 11 + 5, 4),
+        ClockWord::Five => (8 * 11 + 5, 4),
+        ClockWord::Six => (5 * 11 + 5, 5),
+        ClockWord::Seven => (7 * 11 + 0, 6),
+        ClockWord::Eight => (7 * 11 + 7, 4),
+        ClockWord::Nine => (5 * 11 + 0, 4),
+        ClockWord::Ten => (4 * 11 + 3, 4),
+        ClockWord::Eleven => (4 * 11 + 0, 3),
+        ClockWord::Twelve => (9 * 11 + 1, 5),
+        ClockWord::FullClock => (9 * 11 + 8, 3),
+        ClockWord::Half => (3 * 11 + 7, 4),
+        ClockWord::FiveMinutes => (0 * 11 + 7, 4),
+        ClockWord::TenMinutes => (1 * 11 + 0, 4),
+        ClockWord::Quarter => (2 * 11 + 4, 7),
+        ClockWord::Twenty => (1 * 11 + 4, 7),
+        ClockWord::To => (3 * 11 + 0, 3),
+        ClockWord::Past => (3 * 11 + 3, 4),
+        ClockWord::It => (0 * 11 + 0, 2),
+        ClockWord::Is => (0 * 11 + 3, 3),
+        ClockWord::OneMinute => (10 * 11 + 3, 1),
+        ClockWord::TwoMinutes => (10 * 11 + 3, 2),
+        ClockWord::ThreeMinutes => (10 * 11 + 3, 3),
+        ClockWord::FourMinutes => (10 * 11 + 3, 4),
+        ClockWord::Minutes => (0, 0),
+    }
 }
 
 fn handle_minutes_0_to_4_remainder(minute: usize) -> Option<ClockWord> {
