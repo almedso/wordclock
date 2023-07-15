@@ -50,16 +50,15 @@ impl WordClock {
                 map_time_to_clock_words: map_time_to_clock_words_half_past_mode,
             },
             "de-de" => WordClock {
-              text: DE_DE_GRID,
-              map_clock_word_to_array_pos: map_de_de,
-              map_time_to_clock_words: map_time_to_clock_words_half_mode,
+                text: DE_DE_GRID,
+                map_clock_word_to_array_pos: map_de_de,
+                map_time_to_clock_words: map_time_to_clock_words_half_mode,
             },
             "ch-bern" | _ => WordClock {
                 text: CH_BERN_GRID,
                 map_clock_word_to_array_pos: map_swiss_bern,
                 map_time_to_clock_words: map_time_to_clock_words_half_mode,
             },
-
         }
     }
 
@@ -210,7 +209,7 @@ pub const DE_DE_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
 /// Map clock word to it"s the position and length in the grid
 fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
     match clock_word {
-        ClockWord::Zero => (0, 0),
+        ClockWord::Zero => (9 * 11 + 0, 6),
         ClockWord::One => (4 * 11 + 0, 3),
         ClockWord::Two => (4 * 11 + 3, 4),
         ClockWord::Three => (4 * 11 + 8, 3),
@@ -278,7 +277,7 @@ fn map_en_uk(clock_word: ClockWord) -> (usize, usize) {
 /// Map clock word to it"s the position and length in the grid
 fn map_de_de(clock_word: ClockWord) -> (usize, usize) {
     match clock_word {
-        ClockWord::Zero => (0, 0),
+        ClockWord::Zero => (9 * 11 + 1, 5),
         ClockWord::One => (4 * 11 + 7, 4),
         ClockWord::Two => (8 * 11 + 0, 4),
         ClockWord::Three => (6 * 11 + 0, 4),
@@ -321,9 +320,12 @@ fn handle_minutes_0_to_4_remainder(minute: usize) -> Option<ClockWord> {
 }
 
 fn handle_the_hour(hour: usize) -> Option<ClockWord> {
+    if hour == 12 {
+        return Some(ClockWord::Twelve);
+    }
     let hour = hour % 12;
     match hour {
-        0 => Some(ClockWord::Twelve),
+        0 => Some(ClockWord::Zero),
         1 => Some(ClockWord::One),
         2 => Some(ClockWord::Two),
         3 => Some(ClockWord::Three),
