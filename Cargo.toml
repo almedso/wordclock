@@ -1,7 +1,11 @@
 [package]
 name = "wordclock"
+description = "Wordclock"
+homepage = "https://github.com/almedso/wordclock-in-rust"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+license-file = "LICENSE-MIT"
 
 [dev-dependencies]
 chrono = "0.4.26"
