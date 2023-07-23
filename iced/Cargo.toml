@@ -4,8 +4,7 @@ description = "Wordclock implemented in iced framework"
 homepage = "https://github.com/almedso/wordclock-in-rust"
 version = "0.1.0"
 edition = "2021"
-license = "MIT"
-license-file = "LICENSE-MIT"
+license-file = "../LICENSE-MIT"
 
 [dependencies]
 wordclock = { path = "../" }
