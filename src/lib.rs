@@ -90,7 +90,7 @@ pub struct WordClockIterator<'a> {
 }
 
 impl<'a> WordClockIterator<'a> {
-    fn higlight_character(&self) -> bool {
+    fn highlight_character(&self) -> bool {
         for word in (self.word_clock.map_time_to_clock_words)(self.hour, self.minute)
             .into_iter()
             .flatten()
@@ -113,7 +113,7 @@ impl<'a> Iterator for WordClockIterator<'a> {
         }
 
         let end_of_row = (self.index % MAX_COLUMNS) == (MAX_COLUMNS - 1);
-        let highlight = self.higlight_character();
+        let highlight = self.highlight_character();
         let character = self.word_clock.text[self.index];
         self.index += 1;
         Some((character, highlight, end_of_row))
