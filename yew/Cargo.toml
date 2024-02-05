@@ -8,6 +8,6 @@ edition = "2021"
 [dependencies]
 wordclock = { path = "../" }
 yew = { version = "0.20" , features = [ "csr" ] }
-# malvolio = { version = "0.4.1", features = [  ]}
 time = { version = "0.3.5", features = ["local-offset"] }
 chrono = "0.4.26"
+gloo = "0.8.1"
