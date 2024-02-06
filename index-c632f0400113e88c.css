@@ -1,0 +1,33 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  background: black;
+  font-size: 1.5rem;
+}
+
+main {
+  color: #000000;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto;
+  gap: 10px;
+  background-color: black;
+  padding: 10px;
+}
+
+.grid-container > div {
+  background-color: black;
+  text-align: center;
+  font-size: 30px;
+}
