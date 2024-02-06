@@ -1,0 +1,17 @@
+{
+  "name": "wordclock",
+  "short_name": "wordclock",
+  "theme_color": "#00ff00",
+  "background_color": "#ffffff",
+  "display": "browser",
+  "scope": "/",
+  "start_url": "/"
+  "icons": [
+    {
+      "src": "almedso-logo-green.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+],
+}
