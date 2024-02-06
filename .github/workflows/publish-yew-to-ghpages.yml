@@ -1,9 +1,6 @@
-name: Pages
-on:
-  # Only run after a successful release
-  workflow_call:
-  # Allow to run manually
-  workflow_dispatch:
+name: Publish yew frontend to github pages
+
+on: [push]
 
 permissions:
   contents: write
