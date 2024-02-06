@@ -4,7 +4,6 @@
 //!
 //! The following code prints current time the bern dialect on terminal
 //! ```rust
-//!
 //! use chrono::{Timelike, Utc};
 //! use wordclock::WordClock;
 //!
@@ -24,7 +23,6 @@
 //!     }
 //! }
 //! ```
-//!
 
 pub struct WordClock {
     text: [&'static str; MAX_COLUMNS * MAX_ROWS],
@@ -43,6 +41,7 @@ impl WordClock {
     /// If an another then the above dialects is provided the default
     /// of ch-bern is applied.
     pub fn new(dialect: String) -> Self {
+        #[allow(clippy::wildcard_in_or_patterns)]
         match &dialect[..] {
             "en-uk" => WordClock {
                 text: EN_UK_GRID,
@@ -72,7 +71,7 @@ impl WordClock {
     /// - letter: The letter to display
     /// - highlight flag: if the letter belongs to current time
     /// - end_of_row: if the next letter (if any) should start a new row
-    pub fn show_time_iterator<'a>(&'a self, hour: usize, minute: usize) -> WordClockIterator<'a> {
+    pub fn show_time_iterator(&self, hour: usize, minute: usize) -> WordClockIterator<'_> {
         WordClockIterator {
             index: 0,
             hour,
@@ -208,6 +207,7 @@ pub const DE_DE_GRID: [&str; MAX_COLUMNS * MAX_ROWS] = [
 
 /// Map clock word to it"s the position and length in the grid
 fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     match clock_word {
         ClockWord::Zero => (9 * 11 + 0, 6),
         ClockWord::One => (4 * 11 + 0, 3),
@@ -242,6 +242,7 @@ fn map_swiss_bern(clock_word: ClockWord) -> (usize, usize) {
 
 /// Map clock word to it"s the position and length in the grid
 fn map_en_uk(clock_word: ClockWord) -> (usize, usize) {
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     match clock_word {
         ClockWord::Zero => (5 * 11 + 0, 8),
         ClockWord::One => (8 * 11 + 0, 3),
@@ -276,6 +277,7 @@ fn map_en_uk(clock_word: ClockWord) -> (usize, usize) {
 
 /// Map clock word to it"s the position and length in the grid
 fn map_de_de(clock_word: ClockWord) -> (usize, usize) {
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     match clock_word {
         ClockWord::Zero => (9 * 11 + 1, 5),
         ClockWord::One => (4 * 11 + 7, 4),
