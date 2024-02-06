@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 wordclock = { path = "../" }
-iced = { git = "https://github.com/iced-rs/iced.git", features = ["canvas", "tokio", "debug"] }
+iced = { version = "0.9" , features = ["tokio", "debug"] }
 time = { version = "0.3.5", features = ["local-offset"] }
