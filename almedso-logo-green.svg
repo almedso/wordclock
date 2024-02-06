@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewbox="0 0 200 200">
+
+  <circle cx="100.0" cy="175.0"  r="1" style="stroke:#38761D;stroke-width:14.0;fill:#38761D;" />
+  <circle cx="148.26404228" cy="42.592838227" r="1" style="stroke:#38761D;stroke-width:14.0;fill:#38761D;" />
+  <circle cx="51.7359577203" cy="42.592838227" r="1" style="stroke:#38761D;stroke-width:14.0;fill:#38761D;" />
+
+  <line x1="108.561745886" y1="151.511779391" x2="139.702296394" y2="66.0810588363" style="stroke:#38761D;stroke-width:15.0;stroke-linecap:round;" />
+  <line x1="91.4382541142" y1="151.511779391" x2="60.2977036061" y2="66.0810588363" style="stroke:#38761D;stroke-width:15.0;;stroke-linecap:round;" />
+
+  <path d="M123.717082451,171.151247354 a75.0 75.0 0 0 0 40.2239468767,-110.350032647"
+        style="stroke:#38761D;stroke-width:15.0;fill:none;;stroke-linecap:round;" />
+  <path d="M76.2829175487,171.151247354 a75.0,75.0 0 0,1 -40.2239468767,-110.350032647"
+        style="stroke:#38761D;stroke-width:15.0;fill:none;;stroke-linecap:round;" />
+  <path d="M127.633552286,30.2763541685 a75.0,75.0 0 0,0 -55.2671045726,0.0"
+        style="stroke:#38761D;stroke-width:15.0;fill:none;;stroke-linecap:round;" />
+
+</svg>
