@@ -1,12 +1,7 @@
 # Word Clock
 
 This is a multi language wordclock application
-implemented in yew / rust / wasm.
-
-- yew is used with malvolio html rendering
-- tailwind css is used to style the page easily
-- by help of the railwind compiler
-
+implemented in yew & gloo / rust / wasm.
 
 ## How to develop
 
@@ -21,6 +16,9 @@ trunk server --open
 Package into a cdn
 
 ```
-trunk server --open
+trunk build
 ```
+
+generates the output to to `dist` while the rust wasm output is located at
+`target/...´
 
