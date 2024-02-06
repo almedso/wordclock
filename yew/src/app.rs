@@ -7,43 +7,49 @@ pub enum Msg {
     UpdateTime,
 }
 
-pub struct App {
+#[derive(Properties, Clone, PartialEq)]
+pub struct LangProps {
+    pub language: String
+}
+
+pub struct WordClockComponent {
     _standalone: Interval,
     language: String,
     hour: usize,
     minute: usize,
 }
 
-impl App {
+impl WordClockComponent {
     fn get_current_time() -> (usize, usize) {
         let now = Utc::now();
         (now.hour() as usize, now.minute() as usize)
     }
 }
 
-impl Component for App {
+impl Component for WordClockComponent {
     type Message = Msg;
-    type Properties = ();
+    type Properties = LangProps;
 
     fn create(ctx: &Context<Self>) -> Self {
         let _standalone = {
             let link = ctx.link().clone();
             Interval::new(1000, move || link.send_message(Msg::UpdateTime))
         };
+        let language = ctx.props().language.clone();
 
-        let (hour, minute) = App::get_current_time();
+        let (hour, minute) = WordClockComponent::get_current_time();
         Self {
             _standalone,
             hour,
             minute,
-            language: "ch-bern".to_string(),
+            language,
         }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::UpdateTime => {
-                (self.hour, self.minute) = App::get_current_time();
+                (self.hour, self.minute) = WordClockComponent::get_current_time();
                 true
             }
         }
