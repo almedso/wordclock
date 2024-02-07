@@ -42,4 +42,13 @@ jobs:
         shell: bash
         env:
           STRATO_FTP_PASSWORD: ${{ secrets.STRATO_FTP_PASSWORD }}
+        run: |
+          : # copy the index.html to language subdirectories is required due to the web server settings at strato
+          mkdir -p yew/dist/de
+          cp yew/dist/index.html yew/dist/de/
+          mkdir -p yew/dist/ch
+          cp yew/dist/index.html yew/dist/ch/
+          mkdir -p yew/dist/en
+          cp yew/dist/index.html yew/dist/en/
         run:  lftp -u homepage@almedso.de,$STRATO_FTP_PASSWORD -e "set sftp:auto-confirm yes; mirror -X .* -X .*/ --reverse --verbose --delete yew/dist/ /wordclock/; quit" sftp://ssh.strato.de
+
