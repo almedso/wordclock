@@ -1,9 +1,8 @@
 //! #  Example
 //!
-//! See the `iced` and `pancurses` creates containing  working examples
+//! The following code prints current time the Swiss Bern dialect on terminal
 //!
-//! The following code prints current time the bern dialect on terminal
-//! ```rust
+//! ```ignore
 //! use chrono::{Timelike, Utc};
 //! use wordclock::WordClock;
 //!

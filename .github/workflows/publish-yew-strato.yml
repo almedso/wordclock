@@ -50,5 +50,5 @@ jobs:
           cp yew/dist/index.html yew/dist/ch/
           mkdir -p yew/dist/en
           cp yew/dist/index.html yew/dist/en/
-        run:  lftp -u homepage@almedso.de,$STRATO_FTP_PASSWORD -e "set sftp:auto-confirm yes; mirror -X .* -X .*/ --reverse --verbose --delete yew/dist/ /wordclock/; quit" sftp://ssh.strato.de
+          lftp -u homepage@almedso.de,$STRATO_FTP_PASSWORD -e "set sftp:auto-confirm yes; mirror -X .* -X .*/ --reverse --verbose --delete yew/dist/ /wordclock/; quit" sftp://ssh.strato.de
 
